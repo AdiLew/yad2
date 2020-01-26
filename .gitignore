@@ -1,2 +1,4 @@
+.vscode
 src/config/
 node_modules
+/config/
