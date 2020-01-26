@@ -1,6 +1,6 @@
 const express = require('express');
 require('./db/mongoose');
-const bot = require('./utils/telegram');
+const bot = require('./utils/telegram/telegram');
 
 const app = express();
 const port = process.env.PORT || 3300;
