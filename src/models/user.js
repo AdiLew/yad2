@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     created: {
         type: Date,
         default: new Date()
+    },
+    filters:{
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     }
 })
 

@@ -1,6 +1,7 @@
 const url = require('url'),
     Scene = require('telegraf/scenes/base'),
-    Stage = require('telegraf/stage')
+    Stage = require('telegraf/stage'),
+    User = require('../../../models/user')
 
 const getUrl = new Scene('getUrl')
 getUrl.enter(ctx =>
@@ -13,7 +14,16 @@ getUrl.leave(ctx =>
 
 getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent\?[\S]*$/gi, async (ctx) => {
     await ctx.reply('Gotcha. Let me check');
-    getFiltersFromUrl(ctx.message.text, ctx.session.user)
+    const filters = getFiltersFromUrl(ctx.message.text)
+    const user = await User.findOne({ id: ctx.from.id })
+    if(user){
+        user.filters = filters;
+        try{
+            await user.save()
+        } catch (error){
+            console.log(error)
+        }
+    }
     Stage.leave()
 
 })
@@ -27,11 +37,10 @@ getUrl.on('message', ctx => {
     return console.log(ctx.message)
 })
 
-const getFiltersFromUrl = async (searchUrl, user) => {
+const getFiltersFromUrl = (searchUrl, user) => {
     const myUrl = url.parse(searchUrl);
     const searchParams = queryStringToSearchParams(myUrl.query);
-    user.filters = searchParams;
-    await user.save()
+    return searchParams;
 }
 
 const queryStringToSearchParams = (query) => {
