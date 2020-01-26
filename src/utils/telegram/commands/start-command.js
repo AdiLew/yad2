@@ -21,6 +21,7 @@ const startCommand = async (ctx) => {
             ctx.reply(`Hey, ${user.firstName}!\nAre you looking to update your settings?`,
                 generateInlineCallbackKeyboard(buttons))
         }
+        ctx.state.user = user;
 
     }
     catch (error) {
