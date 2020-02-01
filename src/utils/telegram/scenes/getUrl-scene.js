@@ -12,7 +12,7 @@ getUrl.leave(ctx =>
     ctx.reply('Alright!')
 )
 
-getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent\?[\S]*$/gi, async (ctx) => {
+getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent\?[\S]*$/gi, async (ctx,next) => {
     await ctx.reply('Gotcha. Let me check');
     const filters = getFiltersFromUrl(ctx.message.text)
     const user = await User.findOne({ id: ctx.from.id })
@@ -24,17 +24,21 @@ getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent\?[\S]*$/gi, a
             console.log(error)
         }
     }
-    Stage.leave()
-
+      try{
+         const leave = Stage.leave()
+         leave(ctx)
+        }
+     catch(err){
+         console.error(err)
+     }
 })
 getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate(\/(rent(\??))?)?$/gi, (ctx) => { ctx.reply("Great! You're in the realestate page! Now perform your search and then send me the address.") })
 getUrl.hears(/^(https?:\/\/)?(www.)?(yad2.co.il)$/gi, (ctx) => { ctx.reply("Yes, that's Yad 2. But I need you to first search and then send me the URL.") })
-getUrl.hears(/cancel/gi,
-    Stage.leave()
-)
+getUrl.hears(/cancel/gi, Stage.leave());
 
-getUrl.on('message', ctx => {
-    return console.log(ctx.message)
+
+getUrl.on('message', async ctx => {
+     await ctx.reply('come again?')
 })
 
 const getFiltersFromUrl = (searchUrl, user) => {
