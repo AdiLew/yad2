@@ -49,7 +49,11 @@ const getFiltersFromUrl = (searchUrl, user) => {
 
 const queryStringToSearchParams = (query) => {
     const paramArray = query.split('&').map(p => p.split('='));
-    const params = Object.fromEntries(paramArray);
+    const params = paramArray.reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+    }, {})
+    //Object.fromEntries(paramArray);
     return params;
 }
 module.exports = getUrl;
