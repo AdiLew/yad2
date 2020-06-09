@@ -4,7 +4,7 @@ const User = require('../../../models/user'),
 
 
 const startCommand = async (ctx) => {
-    const { from } = ctx
+    const { from } = ctx;
     try {
         let user = await User.findOne({ id: from.id })
         //If the user doesn't exist in the DB, register and greet him.
