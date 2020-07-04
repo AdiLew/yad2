@@ -16,21 +16,24 @@ const requestOptions = {
 }
 
 const getApartmentsList = (filters) => {
-    let endpoint = 'https://www.yad2.co.il/api/feed/get'
+    let endpoint = 'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent'
     const query = querystring.stringify(filters)
     endpoint += _.isEmpty(filters) ? '' : `?${query}`
 
+    /* */
+    console.log(endpoint);
+    /* */
     return fetch(endpoint, requestOptions)
         .then(res => res.json())
         .then(data => {
             const { total_items, feed_items } = _.get(data, 'feed');
-            const appartments = feed_items
+            const apartments = feed_items
                 .filter((i) => i.type === 'ad')
                 .map((i) => cleanListItemObject(i))
                 .sort((a, b) => {
                     return b.date_added.valueOf() - a.date_added.valueOf();
                 })
-            return { total_items, appartments };
+            return { total_items, apartments };
         })
 
 }
@@ -96,7 +99,7 @@ function cleanListItemObject(i) {
             contact_name: i.contact_name,
             merchant: i.merchant,
             merchant_name: i.merchant_name,
-            kmFromOmris: parseFloat((geolib.getDistance(i.coordinates, { latitude: 32.072268, longitude: 34.779225 }) / 1000.0).toFixed(1)),
+            //kmFromOmris: parseFloat((geolib.getDistance(i.coordinates, { latitude: 32.072268, longitude: 34.779225 }) / 1000.0).toFixed(1)),
             adUrl: `https://www.yad2.co.il/s/c/${i.id}`
         }
 
