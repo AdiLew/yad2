@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     filters:{
         type: mongoose.Schema.Types.Mixed,
         default: {}
+    },
+    apartmentsSeen:{
+        type: [{type: String}]
+
     }
 })
 

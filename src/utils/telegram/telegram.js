@@ -2,7 +2,7 @@ const Telegraf = require('telegraf');
 const session = require('telegraf/session');
 const stage = require('./stage/stage');
 const startCommand = require('./commands/start-command');
-const getAllApartments = require('./commands/getAllApartments-command');
+const getApartmentsListCommand = require('./commands/getAllApartments-command');
 
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
@@ -11,7 +11,10 @@ const bot = new Telegraf(token);
 // Event Handlers
 bot.start(startCommand);
 bot.command('/setfilters', async (ctx) => ctx.scene.enter('GET_URL_WIZARD'));
-bot.command('/getreportnow', getAllApartments);
+bot.command('/getnew', (ctx) => getApartmentsListCommand(ctx, { isDetailed: true, newAptsOnly: true }));
+bot.command('/getall', (ctx) => getApartmentsListCommand(ctx, { isDetailed: true }));
+bot.command('/listnew', (ctx) => getApartmentsListCommand(ctx, { newAptsOnly: true }));
+bot.command('/listall', (ctx) => getApartmentsListCommand(ctx, {}));
 
 
 

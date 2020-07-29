@@ -15,28 +15,38 @@ const requestOptions = {
     method: 'GET'
 }
 
-const getApartmentsList = (filters) => {
-    let endpoint = 'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent'
-    const query = querystring.stringify(filters)
+const getApartmentsList = async (filters) => {
+    let endpoint = 'https://www.yad2.co.il/api/feed/get';
+    const queryParams = {
+        cat: 2,
+        subcat: 2,
+        isMapView: 1,
+        /*"center_point[]": "32.08713639135732,34.812430918885724",
+        "distance[]": "1000",*/
+        ...filters
+    }
+    const query = querystring.stringify(queryParams);
     endpoint += _.isEmpty(filters) ? '' : `?${query}`
 
-    /* */
-    console.log(endpoint);
-    /* */
-    return fetch(endpoint, requestOptions)
-        .then(res => res.json())
-        .then(data => {
-            const { total_items, feed_items } = _.get(data, 'feed');
-            const apartments = feed_items
-                .filter((i) => i.type === 'ad')
-                .map((i) => cleanListItemObject(i))
-                .sort((a, b) => {
-                    return b.date_added.valueOf() - a.date_added.valueOf();
-                })
-            return { total_items, apartments };
-        })
+    const initialResult = await fetch(endpoint, requestOptions);
+    const data = await initialResult.json();
 
+    const total_items = _.get(data, 'feed.total_items');
+    const feed_items = _.get(data, 'feed.feed_items');
+
+    if(!feed_items){
+        throw new Error('Could not retrieve feed');
+    }
+
+    const apartments = feed_items
+        .filter((i) => i.type === 'ad')
+        .map((i) => cleanListItemObject(i))
+        .sort((a, b) => {
+            return b.date_added.valueOf() - a.date_added.valueOf();
+        })
+    return { total_items, apartments };
 }
+
 
 
 const getApartmenttDetails = (apptId) => {
