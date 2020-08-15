@@ -1,6 +1,8 @@
 const Telegraf = require('telegraf');
 const session = require('telegraf/session');
 const stage = require('./stage/stage');
+
+const identifyUserMiddleware = require('./middlewear/identifyUser-middleware');
 const startCommand = require('./commands/start-command');
 const getApartmentsListCommand = require('./commands/getAllApartments-command');
 
@@ -9,6 +11,7 @@ const bot = new Telegraf(token);
 
 bot.use(session());
 bot.use(stage.middleware());
+bot.use(identifyUserMiddleware);
 
 // Event Handlers
 bot.start(startCommand);
