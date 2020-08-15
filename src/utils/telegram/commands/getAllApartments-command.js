@@ -39,7 +39,7 @@ const getApartmentsListCommand = async (ctx, args = {}) => {
                 return ctx.reply('לא נמצאו דירות חדשות');
             }
 
-            if (validApartments.length<=5) {
+            if (validApartments.length <= 5) {
                 let allMessages = [];
                 validApartments
                     .forEach(apt => {
@@ -59,15 +59,30 @@ const getApartmentsListCommand = async (ctx, args = {}) => {
                 ctx.reply('זה מה שיש לי כרגע')*/
             }
             else {
-                const apartmentListMessage = validApartments
-                    .map(apt => {
-                        let text = apartmentsSeen.includes(apt.id) ? '' : '✨ '
-                        text += `<a href="${apt.adUrl}">דירת ${apt.Rooms_text} חדרים ב${apt.street} ${apt.address_home_number}</a>`
-                        return text;
-                    }).join('\n');
-                const buttons = [{ caption: 'לעמוד הבא', callback: 'nextPage' }, { caption: 'סיימתי', callback: 'abort' }];
+                const messageBuckets = [[]];
+                let bucketIx = 0;
+                let bucketLength = 0;
+                validApartments.forEach(apt => {
+                    let text = apartmentsSeen.includes(apt.id) ? '' : '✨ ';
+                    text += `<a href="${apt.adUrl}">דירת ${apt.Rooms_text} חדרים ב${apt.street} ${apt.address_home_number}</a>`;
+
+                    if (bucketLength + text.length > 4000) {
+                        messageBuckets.push([]);
+                        bucketIx++;
+                        bucketLength = 0;
+                    }
+
+                    messageBuckets[bucketIx].push(text);
+                    bucketLength += text.length;
+                });
+                messageBuckets.forEach(messageBucket => {
+                    const apartmentListMessage = messageBucket.join('\n');
+                    ctx.replyWithHTML(apartmentListMessage);
+                });
+
+                //const buttons = [{ caption: 'לעמוד הבא', callback: 'nextPage' }, { caption: 'סיימתי', callback: 'abort' }];
                 //ctx.replyWithHTML(apartmentListMessage, generateInlineCallbackKeyboard(buttons));
-                ctx.replyWithHTML(apartmentListMessage);
+                //ctx.replyWithHTML(apartmentListMessage);
             }
             // Save new apartments
             if (newApartmentsViewed) {
