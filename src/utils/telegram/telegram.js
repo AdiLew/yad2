@@ -7,6 +7,8 @@ const getApartmentsListCommand = require('./commands/getAllApartments-command');
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
+bot.use(session());
+bot.use(stage.middleware());
 
 // Event Handlers
 bot.start(startCommand);
@@ -18,8 +20,6 @@ bot.command('/listall', (ctx) => getApartmentsListCommand(ctx, {}));
 
 
 
-bot.use(session())
-bot.use(stage.middleware())
 
 bot.action('setFilters', async (ctx) =>
   ctx.scene.enter('GET_URL_WIZARD')
