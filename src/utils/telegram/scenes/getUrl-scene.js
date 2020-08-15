@@ -19,10 +19,11 @@ const getUrlWizard = new Wizard('GET_URL_WIZARD',
             ctx.reply('Alright, cancel it is');
             ctx.scene.leave();
         }
-        else if (ctx.message.text.match(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent\?[\S]*$/gi)) {
+        else if (ctx.message.text.match(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate\/rent(\/map)?\?[\S]*$/gi)) {
             await ctx.reply('Great!');
             ctx.wizard.state.url = ctx.message.text;
-            return ctx.wizard.next();
+            ctx.wizard.next();
+            return ctx.wizard.steps[ctx.wizard.cursor](ctx);
         } else if (ctx.message.text.match(/^(https?:\/\/)?(www.)?(yad2.co.il)\/realestate(\/(rent(\??))?)?$/gi)) {
             ctx.reply("Great! You're in the realestate page! Now perform your search and then send me the address.");
             return;
